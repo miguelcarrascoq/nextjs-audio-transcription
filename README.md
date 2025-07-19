@@ -12,6 +12,7 @@ The app uses the Google Generative Language API (Gemini) for file and URL transc
 - **Modern UI:** Responsive, mobile-friendly design with light/dark mode support and a custom color palette.
 - **Tabs:** Easily switch between microphone, file upload, and URL input methods.
 - **Transcript Box:** Transcript appears only after a result is available.
+- **Gemini API Key Management:** If no Gemini API key is found in your environment, the app will prompt you to enter and save it locally in your browser. You can view or erase the stored key at any time from the UI.
 
 ## Getting Started
 

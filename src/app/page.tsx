@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 
 interface WebkitSpeechRecognition extends EventTarget {
@@ -38,8 +38,30 @@ export default function Home() {
 	const [tab, setTab] = useState("mic");
 	const [isRecording, setIsRecording] = useState(false);
 	const [language, setLanguage] = useState("en-US");
+	const [geminiKey, setGeminiKey] = useState<string | null>(null);
+	const [showGeminiInput, setShowGeminiInput] = useState(false);
 	const recognitionRef = useRef<WebkitSpeechRecognition | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
+
+	useEffect(() => {
+		// Try to get Gemini key from localStorage
+		const stored = typeof window !== 'undefined' ? localStorage.getItem('gemini_api_key') : null;
+		if (stored) setGeminiKey(stored);
+		else setShowGeminiInput(true);
+	}, []);
+
+	const handleGeminiKeySave = () => {
+		if (geminiKey) {
+			localStorage.setItem('gemini_api_key', geminiKey);
+			setShowGeminiInput(false);
+		}
+	};
+
+	const handleGeminiKeyErase = () => {
+		localStorage.removeItem('gemini_api_key');
+		setGeminiKey(null);
+		setShowGeminiInput(true);
+	};
 
 	// Microphone controls
 	const startMicTranscribe = () => {
@@ -71,6 +93,16 @@ export default function Home() {
 		}
 	};
 
+	// Patch fetch to always send Gemini key if present
+	const fetchWithGeminiKey = async (input: RequestInfo, init?: RequestInit) => {
+		if (geminiKey) {
+			if (init && init.body instanceof FormData) {
+				init.body.append('gemini_api_key', geminiKey);
+			}
+		}
+		return fetch(input, init);
+	};
+
 	// Handle file upload (Gemini API)
 	const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
 		const file = e.target.files?.[0];
@@ -81,7 +113,7 @@ export default function Home() {
 		formData.append("file", file);
 		formData.append("language", language);
 		try {
-			const res = await fetch("/api/transcribe", {
+			const res = await fetchWithGeminiKey("/api/transcribe", {
 				method: "POST",
 				body: formData,
 			});
@@ -107,7 +139,7 @@ export default function Home() {
 		formData.append("url", audioUrl);
 		formData.append("language", language);
 		try {
-			const res = await fetch("/api/transcribe", {
+			const res = await fetchWithGeminiKey("/api/transcribe", {
 				method: "POST",
 				body: formData,
 			});
@@ -245,6 +277,45 @@ export default function Home() {
 						</div>
 					</div>
 				)}
+				{geminiKey && !showGeminiInput && (
+          <div className="w-full flex flex-col gap-2 mb-4 bg-fuchsia-50 dark:bg-slate-800 p-4 rounded-xl border border-fuchsia-400 dark:border-fuchsia-700">
+            <label className="font-medium text-fuchsia-700 dark:text-fuchsia-200">Gemini API Key (stored locally):</label>
+            <div className="flex flex-col sm:flex-row gap-2 items-center">
+              <input
+                type="text"
+                className="border border-fuchsia-400 dark:border-fuchsia-700 rounded px-2 py-1 bg-white dark:bg-slate-900 text-fuchsia-900 dark:text-fuchsia-200 flex-1"
+                value={geminiKey}
+                readOnly
+              />
+              <button
+                className="bg-gradient-to-tr from-fuchsia-500 to-indigo-500 text-white rounded px-4 py-2 font-medium"
+                onClick={handleGeminiKeyErase}
+              >
+                Erase API Key
+              </button>
+            </div>
+          </div>
+        )}
+        {showGeminiInput && (
+          <div className="w-full flex flex-col gap-2 mb-4 bg-fuchsia-50 dark:bg-slate-800 p-4 rounded-xl border border-fuchsia-400 dark:border-fuchsia-700">
+            <label htmlFor="gemini-key" className="font-medium text-fuchsia-700 dark:text-fuchsia-200">Gemini API Key:</label>
+            <input
+              id="gemini-key"
+              type="text"
+              className="border border-fuchsia-400 dark:border-fuchsia-700 rounded px-2 py-1 bg-white dark:bg-slate-900 text-fuchsia-900 dark:text-fuchsia-200"
+              value={geminiKey || ''}
+              onChange={e => setGeminiKey(e.target.value)}
+              placeholder="Paste your Gemini API key here"
+            />
+            <button
+              className="bg-gradient-to-tr from-fuchsia-500 to-indigo-500 text-white rounded px-4 py-2 font-medium mt-2"
+              onClick={handleGeminiKeySave}
+              disabled={!geminiKey}
+            >
+              Save API Key
+            </button>
+          </div>
+        )}
 			</main>
 		</div>
 	);
