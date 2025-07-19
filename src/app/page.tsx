@@ -145,7 +145,7 @@ export default function Home() {
 					</label>
 					<select
 						id="lang"
-						className="border border-indigo-300 dark:border-fuchsia-700 rounded-lg px-2 py-1 text-sm flex-1 min-w-[120px] bg-white dark:bg-slate-900 text-indigo-900 dark:text-fuchsia-200 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-fuchsia-500"
+						className="border border-indigo-300 dark:border-fuchsia-700 rounded-lg px-2 py-1 text-sm w-[180px] bg-white dark:bg-slate-900 text-indigo-900 dark:text-fuchsia-200 focus:ring-2 focus:ring-indigo-400 dark:focus:ring-fuchsia-500 appearance-none"
 						value={language}
 						onChange={(e) => setLanguage(e.target.value)}
 						disabled={loading}
