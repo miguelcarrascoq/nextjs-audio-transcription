@@ -140,15 +140,15 @@ export default function Home() {
 						))}
 					</select>
 				</div>
-				<div className="flex gap-1 sm:gap-2 mb-4 w-full overflow-x-auto">
+				<div className="flex gap-1 sm:gap-2 mb-4 w-full overflow-x-auto bg-white dark:bg-gray-900 rounded-t border-b border-blue-200 dark:border-blue-900 shadow-sm">
 					{TABS.map((t) => (
 						<button
 							key={t.value}
-							className={`flex-1 min-w-[120px] px-2 sm:px-4 py-2 rounded-t border-b-2 transition-colors font-medium text-xs sm:text-base ${
-								tab === t.value
-									? "border-blue-600 bg-blue-50 dark:bg-blue-900"
-									: "border-transparent bg-gray-100 dark:bg-gray-800"
-							}`}
+							className={`flex-1 min-w-[120px] px-2 sm:px-4 py-2 rounded-t font-medium text-xs sm:text-base transition-colors border-b-2
+        ${tab === t.value
+          ? "border-blue-700 bg-blue-700 text-white dark:bg-blue-400 dark:text-blue-950 shadow"
+          : "border-transparent bg-gray-200 dark:bg-gray-800 text-blue-800 dark:text-blue-200 hover:bg-blue-100 dark:hover:bg-blue-900"}
+      `}
 							onClick={() => {
 								setTab(t.value);
 								setTranscript("");
