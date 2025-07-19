@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useState } from "react";
+import Image from "next/image";
 
 const TABS = [
 	{ label: "Microphone", value: "mic" },
@@ -107,11 +108,20 @@ export default function Home() {
 	};
 
 	return (
-		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-4 sm:p-8 pb-20 gap-8 sm:gap-16">
+		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-4 sm:p-8 pb-20 gap-8 sm:gap-16 bg-blue-50 dark:bg-blue-950">
 			<main className="flex flex-col gap-8 sm:gap-[32px] row-start-2 items-center sm:items-start w-full max-w-xl">
-				<h1 className="text-xl sm:text-2xl font-bold mb-2 text-center sm:text-left">
-					Audio Transcription
-				</h1>
+				<div className="flex items-center gap-3 mb-2">
+					<Image
+						src="/logo.svg"
+						alt="App Logo"
+						width={40}
+						height={40}
+						priority
+					/>
+					<h1 className="text-xl sm:text-2xl font-bold text-center sm:text-left">
+						Audio Transcription
+					</h1>
+				</div>
 				<div className="flex flex-col sm:flex-row gap-2 mb-4 w-full items-center">
 					<label htmlFor="lang" className="font-medium text-sm min-w-fit">
 						Language:
@@ -214,7 +224,7 @@ export default function Home() {
 					<h2 className="font-semibold mb-2 text-base sm:text-lg">
 						Transcript
 					</h2>
-					<div className="border rounded p-3 min-h-[180px] bg-gray-50 dark:bg-gray-900 text-sm sm:text-base break-words resize-y overflow-auto" style={{maxHeight: 400}}>
+					<div className="border rounded p-3 min-h-[180px] bg-gray-50 dark:bg-gray-900 text-sm sm:text-base break-words resize-y overflow-auto" style={{ maxHeight: 400 }}>
 						{loading
 							? "Transcribing..."
 							: transcript || (
