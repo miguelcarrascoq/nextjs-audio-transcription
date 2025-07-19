@@ -8,12 +8,26 @@ const TABS = [
 	{ label: "Audio URL", value: "url" },
 ];
 
+const LANGUAGES = [
+	{ label: "English", value: "en-US" },
+	{ label: "Spanish", value: "es-ES" },
+	{ label: "French", value: "fr-FR" },
+	{ label: "German", value: "de-DE" },
+	{ label: "Italian", value: "it-IT" },
+	{ label: "Portuguese", value: "pt-PT" },
+	{ label: "Chinese", value: "zh-CN" },
+	{ label: "Japanese", value: "ja-JP" },
+	{ label: "Korean", value: "ko-KR" },
+	// Add more as needed
+];
+
 export default function Home() {
 	const [audioUrl, setAudioUrl] = useState("");
 	const [transcript, setTranscript] = useState("");
 	const [loading, setLoading] = useState(false);
 	const [tab, setTab] = useState("mic");
 	const [isRecording, setIsRecording] = useState(false);
+	const [language, setLanguage] = useState("en-US");
 	const recognitionRef = useRef<any>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -21,7 +35,7 @@ export default function Home() {
 	const startMicTranscribe = () => {
 		if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
 			const recognition = new (window as any).webkitSpeechRecognition();
-			recognition.lang = "en-US";
+			recognition.lang = language;
 			recognition.onresult = (event: any) => {
 				setTranscript(event.results[0][0].transcript);
 			};
@@ -55,6 +69,7 @@ export default function Home() {
 		setTranscript("");
 		const formData = new FormData();
 		formData.append("file", file);
+		formData.append("language", language);
 		try {
 			const res = await fetch("/api/transcribe", {
 				method: "POST",
@@ -76,6 +91,7 @@ export default function Home() {
 		setTranscript("");
 		const formData = new FormData();
 		formData.append("url", audioUrl);
+		formData.append("language", language);
 		try {
 			const res = await fetch("/api/transcribe", {
 				method: "POST",
@@ -96,6 +112,24 @@ export default function Home() {
 				<h1 className="text-xl sm:text-2xl font-bold mb-2 text-center sm:text-left">
 					Audio Transcription
 				</h1>
+				<div className="flex flex-col sm:flex-row gap-2 mb-4 w-full items-center">
+					<label htmlFor="lang" className="font-medium text-sm min-w-fit">
+						Language:
+					</label>
+					<select
+						id="lang"
+						className="border rounded px-2 py-1 text-sm flex-1 min-w-[120px]"
+						value={language}
+						onChange={(e) => setLanguage(e.target.value)}
+						disabled={loading}
+					>
+						{LANGUAGES.map((l) => (
+							<option key={l.value} value={l.value}>
+								{l.label}
+							</option>
+						))}
+					</select>
+				</div>
 				<div className="flex gap-1 sm:gap-2 mb-4 w-full overflow-x-auto">
 					{TABS.map((t) => (
 						<button

@@ -6,6 +6,7 @@ export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const file = formData.get("file");
   const url = formData.get("url");
+  const language = formData.get("language") || "en-US";
   const geminiApiKey = process.env.GEMINI_API_KEY;
 
   if (!file && !url) {
@@ -27,6 +28,7 @@ export async function POST(req: NextRequest) {
     const base64Audio = nodeBuffer.toString("base64");
     // Use a supported Gemini model for audio (e.g., gemini-1.5-pro-latest)
     const model = "gemini-1.5-pro-latest";
+    const prompt = `Transcribe this audio to plain text in ${language}.`;
     const geminiRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiApiKey}`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -34,7 +36,7 @@ export async function POST(req: NextRequest) {
         contents: [
           { role: "user", parts: [
             { inline_data: { mime_type: "audio/wav", data: base64Audio } },
-            { text: "Transcribe this audio to plain text." }
+            { text: prompt }
           ] }
         ]
       })
