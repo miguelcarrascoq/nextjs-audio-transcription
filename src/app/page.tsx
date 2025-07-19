@@ -14,10 +14,12 @@ export default function Home() {
   const [transcript, setTranscript] = useState("");
   const [loading, setLoading] = useState(false);
   const [tab, setTab] = useState("mic");
+  const [isRecording, setIsRecording] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Try to use browser SpeechRecognition API (free, but only for mic input)
-  const handleMicTranscribe = () => {
+  // Microphone controls
+  const startMicTranscribe = () => {
     if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
       const recognition = new (window as any).webkitSpeechRecognition();
       recognition.lang = "en-US";
@@ -26,10 +28,23 @@ export default function Home() {
       };
       recognition.onerror = (event: any) => {
         setTranscript("Speech recognition error: " + event.error);
+        setIsRecording(false);
       };
+      recognition.onend = () => {
+        setIsRecording(false);
+      };
+      recognitionRef.current = recognition;
       recognition.start();
+      setIsRecording(true);
     } else {
       setTranscript("SpeechRecognition API not supported in this browser.");
+    }
+  };
+
+  const stopMicTranscribe = () => {
+    if (recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsRecording(false);
     }
   };
 
@@ -102,14 +117,17 @@ export default function Home() {
         </div>
         <div className="w-full border rounded-b p-4 bg-white dark:bg-gray-900">
           {tab === "mic" && (
-            <button
-              className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
-              onClick={handleMicTranscribe}
-              type="button"
-              disabled={loading}
-            >
-              Transcribe from Microphone (free)
-            </button>
+            <div className="flex flex-col gap-2 items-start">
+              <button
+                className={`rounded px-4 py-2 font-medium text-white ${isRecording ? "bg-red-600 hover:bg-red-700" : "bg-blue-600 hover:bg-blue-700"}`}
+                onClick={isRecording ? stopMicTranscribe : startMicTranscribe}
+                type="button"
+                disabled={loading}
+              >
+                {isRecording ? "Stop Recording" : "Start Recording"}
+              </button>
+              <span className="text-xs text-gray-500 mt-1">{isRecording ? "Recording..." : ""}</span>
+            </div>
           )}
           {tab === "file" && (
             <div className="flex flex-col gap-2">
