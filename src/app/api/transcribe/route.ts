@@ -7,7 +7,7 @@ export async function POST(req: NextRequest) {
   const file = formData.get("file");
   const url = formData.get("url");
   const language = formData.get("language") || "en-US";
-  const geminiApiKey = process.env.GEMINI_API_KEY;
+  const geminiApiKey = (formData.get("gemini_api_key") as string) || process.env.GEMINI_API_KEY;
 
   if (!file && !url) {
     return NextResponse.json({ error: "No file or URL provided." }, { status: 400 });
