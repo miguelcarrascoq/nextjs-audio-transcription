@@ -3,6 +3,15 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 
+interface WebkitSpeechRecognition extends EventTarget {
+  lang: string;
+  onresult: (event: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => void;
+  onerror: (event: { error: string }) => void;
+  onend: () => void;
+  start: () => void;
+  stop: () => void;
+}
+
 const TABS = [
 	{ label: "Microphone", value: "mic" },
 	{ label: "Upload File", value: "file" },
@@ -29,18 +38,18 @@ export default function Home() {
 	const [tab, setTab] = useState("mic");
 	const [isRecording, setIsRecording] = useState(false);
 	const [language, setLanguage] = useState("en-US");
-	const recognitionRef = useRef<any>(null);
+	const recognitionRef = useRef<WebkitSpeechRecognition | null>(null);
 	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	// Microphone controls
 	const startMicTranscribe = () => {
 		if (typeof window !== "undefined" && "webkitSpeechRecognition" in window) {
-			const recognition = new (window as any).webkitSpeechRecognition();
+			const recognition = new (window as { webkitSpeechRecognition: new () => unknown }).webkitSpeechRecognition() as WebkitSpeechRecognition;
 			recognition.lang = language;
-			recognition.onresult = (event: any) => {
+			recognition.onresult = (event: { results: { [key: number]: { [key: number]: { transcript: string } } } }) => {
 				setTranscript(event.results[0][0].transcript);
 			};
-			recognition.onerror = (event: any) => {
+			recognition.onerror = (event: { error: string }) => {
 				setTranscript("Speech recognition error: " + event.error);
 				setIsRecording(false);
 			};
@@ -79,8 +88,12 @@ export default function Home() {
 			const data = await res.json();
 			if (data.transcript) setTranscript(data.transcript);
 			else setTranscript(data.error || "Transcription failed.");
-		} catch (e: any) {
-			setTranscript("Error: " + e.message);
+		} catch (e) {
+			if (e instanceof Error) {
+				setTranscript("Error: " + e.message);
+			} else {
+				setTranscript("Unknown error");
+			}
 		}
 		setLoading(false);
 	};
@@ -101,8 +114,12 @@ export default function Home() {
 			const data = await res.json();
 			if (data.transcript) setTranscript(data.transcript);
 			else setTranscript(data.error || "Transcription failed.");
-		} catch (e: any) {
-			setTranscript("Error: " + e.message);
+		} catch (e) {
+			if (e instanceof Error) {
+				setTranscript("Error: " + e.message);
+			} else {
+				setTranscript("Unknown error");
+			}
 		}
 		setLoading(false);
 	};

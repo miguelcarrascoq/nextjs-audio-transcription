@@ -49,8 +49,8 @@ export async function POST(req: NextRequest) {
   }
 
   // If file is provided, handle file transcription
-  if (file && typeof (file as any).arrayBuffer === "function") {
-    const audioBuffer = await (file as any).arrayBuffer();
+  if (file && typeof (file as File).arrayBuffer === "function") {
+    const audioBuffer = await (file as File).arrayBuffer();
     const result = await transcribeWithGemini(audioBuffer);
     if (result.transcript) return NextResponse.json({ transcript: result.transcript });
     return NextResponse.json({ error: result.error }, { status: 500 });
@@ -65,8 +65,11 @@ export async function POST(req: NextRequest) {
       const result = await transcribeWithGemini(audioBuffer);
       if (result.transcript) return NextResponse.json({ transcript: result.transcript });
       return NextResponse.json({ error: result.error }, { status: 500 });
-    } catch (e: any) {
-      return NextResponse.json({ error: e.message }, { status: 500 });
+    } catch (e) {
+      if (e instanceof Error) {
+        return NextResponse.json({ error: e.message }, { status: 500 });
+      }
+      return NextResponse.json({ error: 'Unknown error' }, { status: 500 });
     }
   }
 
