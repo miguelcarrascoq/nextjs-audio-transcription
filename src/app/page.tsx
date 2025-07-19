@@ -220,18 +220,18 @@ export default function Home() {
 						</div>
 					)}
 				</div>
-				<div className="mt-6 w-full">
-					<h2 className="font-semibold mb-2 text-base sm:text-lg">
-						Transcript
-					</h2>
-					<div className="border rounded p-3 min-h-[180px] bg-gray-50 dark:bg-gray-900 text-sm sm:text-base break-words resize-y overflow-auto" style={{ maxHeight: 400 }}>
-						{loading
-							? "Transcribing..."
-							: transcript || (
-									<span className="text-gray-400">No transcript yet.</span>
-							  )}
+				{(transcript || loading) && (
+					<div className="mt-6 w-full">
+						<h2 className="font-semibold mb-2 text-base sm:text-lg">
+							Transcript
+						</h2>
+						<div className="border rounded p-3 min-h-[180px] bg-gray-50 dark:bg-gray-900 text-sm sm:text-base break-words resize-y overflow-auto" style={{ maxHeight: 400 }}>
+							{loading
+								? "Transcribing..."
+								: transcript}
+						</div>
 					</div>
-				</div>
+				)}
 			</main>
 		</div>
 	);
