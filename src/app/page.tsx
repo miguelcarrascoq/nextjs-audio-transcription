@@ -94,7 +94,7 @@ export default function Home() {
 		<div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-4 sm:p-8 pb-20 gap-8 sm:gap-16">
 			<main className="flex flex-col gap-8 sm:gap-[32px] row-start-2 items-center sm:items-start w-full max-w-xl">
 				<h1 className="text-xl sm:text-2xl font-bold mb-2 text-center sm:text-left">
-					Audio Transcription Demo
+					Audio Transcription
 				</h1>
 				<div className="flex gap-1 sm:gap-2 mb-4 w-full overflow-x-auto">
 					{TABS.map((t) => (
@@ -180,7 +180,7 @@ export default function Home() {
 					<h2 className="font-semibold mb-2 text-base sm:text-lg">
 						Transcript
 					</h2>
-					<div className="border rounded p-3 min-h-[80px] bg-gray-50 dark:bg-gray-900 text-sm sm:text-base break-words">
+					<div className="border rounded p-3 min-h-[180px] bg-gray-50 dark:bg-gray-900 text-sm sm:text-base break-words resize-y overflow-auto" style={{maxHeight: 400}}>
 						{loading
 							? "Transcribing..."
 							: transcript || (
