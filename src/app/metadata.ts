@@ -10,10 +10,10 @@ export const metadata: Metadata = {
     siteName: "Audio Transcription App",
     images: [
       {
-        url: "/logo.svg",
+        url: "/opengraph-image.svg",
         width: 1200,
         height: 630,
-        alt: "Audio Transcription App Logo",
+        alt: "Audio Transcription App Preview",
       },
     ],
     locale: "en_US",
@@ -23,7 +23,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Audio Transcription App",
     description: "Transcribe audio to text from microphone, file, or URL using Gemini AI. Modern, mobile-friendly, and supports multiple languages.",
-    images: ["/logo.svg"],
+    images: ["/opengraph-image.svg"],
     creator: "@miguelCarrascoQ"
   },
 };
