@@ -3,10 +3,17 @@
 import React, { useRef, useState } from "react";
 import Image from "next/image";
 
+const TABS = [
+  { label: "Microphone", value: "mic" },
+  { label: "Upload File", value: "file" },
+  { label: "Audio URL", value: "url" },
+];
+
 export default function Home() {
   const [audioUrl, setAudioUrl] = useState("");
   const [transcript, setTranscript] = useState("");
   const [loading, setLoading] = useState(false);
+  const [tab, setTab] = useState("mic");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Try to use browser SpeechRecognition API (free, but only for mic input)
@@ -26,7 +33,7 @@ export default function Home() {
     }
   };
 
-  // Handle file upload (for future: open-source or Gemini API)
+  // Handle file upload (Gemini API)
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -48,7 +55,7 @@ export default function Home() {
     setLoading(false);
   };
 
-  // Handle URL input (for future: open-source or Gemini API)
+  // Handle URL input (Gemini API)
   const handleUrlTranscribe = async () => {
     if (!audioUrl) return;
     setLoading(true);
@@ -81,43 +88,65 @@ export default function Home() {
           priority
         />
         <h1 className="text-2xl font-bold mb-2">Audio Transcription Demo</h1>
-        <div className="flex flex-col gap-4 w-full">
-          <button
-            className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
-            onClick={handleMicTranscribe}
-            type="button"
-          >
-            Transcribe from Microphone (free)
-          </button>
-          <div className="flex flex-col gap-2">
-            <label className="font-medium">Upload Audio File</label>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/*"
-              onChange={handleFileChange}
-              className="border rounded px-2 py-1"
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="font-medium">Audio File URL</label>
-            <div className="flex gap-2">
+        <div className="flex gap-2 mb-4">
+          {TABS.map(t => (
+            <button
+              key={t.value}
+              className={`px-4 py-2 rounded-t border-b-2 transition-colors font-medium ${tab === t.value ? "border-blue-600 bg-blue-50 dark:bg-blue-900" : "border-transparent bg-gray-100 dark:bg-gray-800"}`}
+              onClick={() => { setTab(t.value); setTranscript(""); }}
+              type="button"
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="w-full border rounded-b p-4 bg-white dark:bg-gray-900">
+          {tab === "mic" && (
+            <button
+              className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
+              onClick={handleMicTranscribe}
+              type="button"
+              disabled={loading}
+            >
+              Transcribe from Microphone (free)
+            </button>
+          )}
+          {tab === "file" && (
+            <div className="flex flex-col gap-2">
+              <label className="font-medium">Upload Audio File</label>
               <input
-                type="url"
-                value={audioUrl}
-                onChange={e => setAudioUrl(e.target.value)}
-                placeholder="https://example.com/audio.mp3"
-                className="border rounded px-2 py-1 flex-1"
+                ref={fileInputRef}
+                type="file"
+                accept="audio/*"
+                onChange={handleFileChange}
+                className="border rounded px-2 py-1"
+                disabled={loading}
               />
-              <button
-                className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
-                onClick={handleUrlTranscribe}
-                type="button"
-              >
-                Transcribe URL
-              </button>
             </div>
-          </div>
+          )}
+          {tab === "url" && (
+            <div className="flex flex-col gap-2">
+              <label className="font-medium">Audio File URL</label>
+              <div className="flex gap-2">
+                <input
+                  type="url"
+                  value={audioUrl}
+                  onChange={e => setAudioUrl(e.target.value)}
+                  placeholder="https://example.com/audio.mp3"
+                  className="border rounded px-2 py-1 flex-1"
+                  disabled={loading}
+                />
+                <button
+                  className="bg-blue-600 text-white rounded px-4 py-2 hover:bg-blue-700"
+                  onClick={handleUrlTranscribe}
+                  type="button"
+                  disabled={loading}
+                >
+                  Transcribe URL
+                </button>
+              </div>
+            </div>
+          )}
         </div>
         <div className="mt-6 w-full">
           <h2 className="font-semibold mb-2">Transcript</h2>
