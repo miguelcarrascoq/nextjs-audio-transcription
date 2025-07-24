@@ -7,6 +7,14 @@ This project is a web application that allows you to transcribe audio to plain t
 
 The app uses the Google Generative Language API (Gemini) for file and URL transcription. Microphone transcription uses your browser's built-in speech recognition (if available).
 
+## Screenshot
+
+![App Screenshot](public/screenshot.png)
+
+## Demo
+
+[Live Demo](https://audio-transcription-mime.vercel.app)
+
 ## Features
 - **Language Selector:** Choose from multiple languages for transcription. The selected language is used for both Gemini and microphone transcription. English is the default.
 - **Modern UI:** Responsive, mobile-friendly design with light/dark mode support and a custom color palette.
